@@ -18,9 +18,10 @@ class SearchSqlBuilder
   end
 
   def build
-    parse_by
-    parse_in
-    parse_text
+    build_by_user
+    build_in_category
+    build_text_search
+
     ['SELECT * FROM topics WHERE id IN (',
       @post_select, @post_from, 'WHERE', @post_where.join(' AND '),
       'UNION',
@@ -39,13 +40,11 @@ class SearchSqlBuilder
     term.count('"') == 2
   end
 
-  def parse_in
+  def build_in_category
     search_categories = []
 
-    @terms.each do |term|
-
-      if term.downcase.include? 'in:'
-        category_name = term.split(':')[1]
+    if @terms['in']
+      @terms['in'].each do |category_name|
         category = Category
           .where('lower(name) = ?', category_name.downcase).first
         if category
@@ -53,41 +52,41 @@ class SearchSqlBuilder
         end
       end
 
-    end
+      if search_categories.present?
+        category_from = 'topic_categories tc'
+        if @post_from.exclude? category_from
+          @post_from = "#{@post_from}, #{category_from}"
+        end
 
-    if search_categories.present?
-      category_from = 'topic_categories tc'
-      if @post_from.exclude? category_from
-        @post_from = "#{@post_from}, #{category_from}"
-      end
+        if @topic_from.exclude? category_from
+          @topic_from = "#{@topic_from}, #{category_from}"
+        end
 
-      if @topic_from.exclude? category_from
-        @topic_from = "#{@topic_from}, #{category_from}"
-      end
+        category_where = 'tc.category_id in (?)'
+        category_join = 'tc.topic_id = t.id'
+        if @post_where.exclude? category_where
+          @post_where << category_where
+          @post_binds.push(search_categories)
+        end
 
-      category_where = 'tc.category_id in (?)'
-      category_join = 'tc.topic_id = t.id'
-      if @post_where.exclude? category_where
-        @post_where << category_where
-        @post_binds.push(search_categories)
-      end
+        if @post_where.exclude? category_join
+          @post_where << category_join
+        end
 
-      if @post_where.exclude? category_join
-        @post_where << category_join
-      end
-
-      if @topic_where.exclude? category_where
-        @topic_where << category_where
-        @topic_binds.push(search_categories)
-      end
-      if @topic_where.exclude? category_join
-        @topic_where << category_join
+        if @topic_where.exclude? category_where
+          @topic_where << category_where
+          @topic_binds.push(search_categories)
+        end
+        if @topic_where.exclude? category_join
+          @topic_where << category_join
+        end
       end
     end
   end
 
-  def parse_text
-    if search_text.present?
+  def build_text_search
+    if @terms['text'].present?
+      search_text = @terms['text']
       post_from = 'posts p'
       if @post_from.exclude? post_from
         @post_from = "#{@post_from}, #{post_from}"
@@ -128,55 +127,36 @@ class SearchSqlBuilder
     end
   end
 
-  def parse_by
+  def build_by_user
     search_users = []
 
-    @terms.each do |term|
-
-      if term.downcase.include? 'by:'
-        username = term.split(':')[1]
+    if @terms['by']
+      @terms['by'].each do |username|
         user = User.where('lower(name) = ?', username.downcase).first
 
         if user
           search_users << user.id
         end
       end
-    end
 
-    if search_users.present?
-      post_table = 'posts p'
-      if @post_from.exclude? post_table
-        @post_from = "#{@post_from}, #{post_table}"
+      if search_users.present?
+        post_table = 'posts p'
+        if @post_from.exclude? post_table
+          @post_from = "#{@post_from}, #{post_table}"
+        end
+
+        post_where = 'p.user_id in (?)'
+        if @post_where.exclude? post_where
+          @post_where << post_where
+          @post_binds.push(search_users)
+        end
+
+        topic_where = 't.user_id in (?)'
+        if @topic_where.exclude? topic_where
+          @topic_where << topic_where
+          @topic_binds.push(search_users)
+        end
       end
-
-      post_where = 'p.user_id in (?)'
-      if @post_where.exclude? post_where
-        @post_where << post_where
-        @post_binds.push(search_users)
-      end
-
-      topic_where = 't.user_id in (?)'
-      if @topic_where.exclude? topic_where
-        @topic_where << topic_where
-        @topic_binds.push(search_users)
-      end
     end
   end
-
-  def search_text
-    @search_text ||= @terms.keep_if { |term| term.exclude? ':' }
-  end
-
-  def add_table(table)
-    if @topic_from.exclude? table
-      @topic_from = "#{@topic_from}, #{table}"
-    end
-  end
-
-  def add_where(post_clause, topic_clause)
-    if @where.exclude? clause
-      @where << clause
-    end
-  end
-
 end
