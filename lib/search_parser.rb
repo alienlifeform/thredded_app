@@ -16,7 +16,6 @@ class SearchParser
   end
 
   def parse_keywords
-    #found_terms = []
     found_terms_hash = {}
 
     @keywords.each do |keyword|
@@ -34,8 +33,6 @@ class SearchParser
       end
     end
 
-    #found_terms = found_terms.map {|term| term.gsub(' ', '') }
-    #found_terms.uniq
     found_terms_hash
   end
 
