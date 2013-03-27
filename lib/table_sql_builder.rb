@@ -32,30 +32,38 @@ class TableSqlBuilder
   end
 
   def categories
-    if @terms['in']
-      @terms['in'].each do |category_name|
-        category = Category
+    if @search_categories.any?
+      @search_categories
+    else
+      if @terms['in']
+        @terms['in'].each do |category_name|
+          category = Category
           .where('lower(name) = ?', category_name.downcase).first
-        if category
-          @search_categories << category.id
+          if category
+            @search_categories << category.id
+          end
         end
       end
-    end
 
-    @search_categories
+      @search_categories
+    end
   end
 
   def users
-    if @terms['by']
-      @terms['by'].each do |username|
-        user = User.where('lower(name) = ?', username.downcase).first
-        if user
-          @search_users << user.id
+    if @search_users.any?
+      @search_users
+    else
+      if @terms['by']
+        @terms['by'].each do |username|
+          user = User.where('lower(name) = ?', username.downcase).first
+          if user
+            @search_users << user.id
+          end
         end
       end
-    end
 
-    @search_users
+      @search_users
+    end
   end
 
   def text
@@ -83,7 +91,7 @@ class TableSqlBuilder
   def add_where(where, binds=nil)
     if @where.exclude? where
       @where << where
-      if (binds)
+      if (binds.present?)
         @binds.push(binds)
       end
     end

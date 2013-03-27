@@ -39,6 +39,13 @@ describe SearchParser, 'parse' do
     arg_list['in'].should_not include('shaun')
   end
 
+  it 'does not contain duplicate items' do
+    search = 'in: beer by:shaun allagash'
+    arg_list = SearchParser.new(search).parse
+    arg_list['in'].length.should == 1
+    arg_list['by'].length.should == 1
+  end
+
   it 'parses a query containing quotes, by a user, in a category' do
     search = 'in:Beer "Alpine Spring" by:shaun'
     arg_list = SearchParser.new(search).parse
