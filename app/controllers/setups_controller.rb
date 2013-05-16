@@ -38,6 +38,9 @@ class SetupsController < ApplicationController
 
       if @site.valid?
         redirect_to '/3'
+      else
+        flash[:error] = 'There were errors creating your site.'
+        render action: :new
       end
     when '3'
       @user = User.last
@@ -65,6 +68,9 @@ class SetupsController < ApplicationController
 
         sign_in @user
         redirect_to root_path
+      else
+        flash[:error] = 'There were errors creating your messageboard.'
+        render action: :new
       end
     end
   end
