@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   include Gravtastic
   include ActiveModel::Dirty
 
-  gravtastic :email, :size => 142
+  gravtastic :email, size: 142
 
   has_many :identities
   has_many :sites

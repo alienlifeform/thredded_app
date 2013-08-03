@@ -1,3 +1,26 @@
+PATH
+  remote: ~/Development/thredded
+  specs:
+    thredded (0.0.1)
+      RedCloth
+      bb-ruby
+      cancan
+      carrierwave
+      escape_utils
+      fog
+      friendly_id
+      gravtastic
+      htmlentities
+      jquery-rails
+      kaminari
+      mini_magick
+      multi_json
+      nested_form
+      nokogiri
+      rails (~> 3.2)
+      rails_emoji
+      redcarpet
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -368,5 +391,6 @@ DEPENDENCIES
   shoulda-matchers (= 1.2.0)
   therubyracer
   thin
+  thredded!
   timecop
   uglifier

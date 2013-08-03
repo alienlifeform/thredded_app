@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
+gem 'thredded', path: '~/Development/thredded'
 gem 'RedCloth', '4.2.9'
 gem 'bb-ruby', '0.9.5'
 gem 'cancan'
