@@ -1,9 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  before_filter :touch_last_seen
-  helper_method :extra_data,
-    :messageboard,
-    :topic
+  helper_method :extra_data
 
   rescue_from CanCan::AccessDenied do |exception|
     flash[:error] = exception.message
@@ -56,29 +53,5 @@ class ApplicationController < ActionController::Base
 
   def default_home
     root_path
-  end
-
-  def messageboard
-    @messageboard ||= Messageboard.where(name: params[:messageboard_id]).
-      order('id ASC').first
-  end
-
-  def topic
-    if messageboard
-      @topic ||= messageboard.topics.find(params[:topic_id])
-    end
-  end
-
-  def touch_last_seen
-    if current_user && messageboard
-      current_user.mark_active_in!(messageboard)
-    end
-  end
-
-  def ensure_messageboard_exists
-    if messageboard.blank?
-      redirect_to default_home,
-        flash: { error: 'This messageboard does not exist.' }
-    end
   end
 end
