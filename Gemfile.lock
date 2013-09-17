@@ -1,3 +1,28 @@
+PATH
+  remote: ~/Development/thredded
+  specs:
+    thredded (0.0.1)
+      RedCloth
+      bb-ruby
+      cancan
+      carrierwave
+      client_side_validations
+      escape_utils
+      fog
+      friendly_id
+      gravtastic
+      griddler
+      htmlentities
+      jquery-rails
+      kaminari
+      mini_magick
+      multi_json
+      nested_form
+      nokogiri
+      rails (~> 3.2)
+      rails_emoji
+      redcarpet
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -281,27 +306,6 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     thor (0.18.1)
-    thredded (0.0.1)
-      RedCloth
-      bb-ruby
-      cancan
-      carrierwave
-      client_side_validations
-      escape_utils
-      fog
-      friendly_id
-      gravtastic
-      griddler
-      htmlentities
-      jquery-rails
-      kaminari
-      mini_magick
-      multi_json
-      nested_form
-      nokogiri
-      rails (~> 3.2)
-      rails_emoji
-      redcarpet
     tilt (1.4.1)
     timecop (0.6.1)
     treetop (1.4.12)
@@ -360,6 +364,6 @@ DEPENDENCIES
   shoulda-matchers (= 1.2.0)
   therubyracer
   thin
-  thredded
+  thredded!
   timecop
   uglifier

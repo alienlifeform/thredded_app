@@ -6,7 +6,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require pseudohelp/pseudohelp
 //= require keymaster
 //= require jquery_nested_form
 //= require jquery.easing

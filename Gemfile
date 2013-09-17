@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
-gem 'thredded'
+gem 'thredded', path: '~/Development/thredded'
 gem 'compass-rails'
 gem 'devise', '~> 2.2.3'
 gem 'gravtastic', '3.1.0'

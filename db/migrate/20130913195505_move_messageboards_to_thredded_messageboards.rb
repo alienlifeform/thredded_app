@@ -1,4 +1,4 @@
-class MoveLegacyMessageboardsToNew < ActiveRecord::Migration
+class MoveMessageboardsToThreddedMessageboards < ActiveRecord::Migration
   def up
     remove_index :messageboards, [:name, :site_id]
     change_column_null :messageboards, :name, false

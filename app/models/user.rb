@@ -6,18 +6,6 @@ class User < ActiveRecord::Base
   gravtastic :email, size: 142
 
   has_many :identities
-  has_many :sites
-  has_many :roles
-  has_many :messageboards, through: :roles
-  has_many :topics
-  has_many :posts
-  has_many :private_users
-  has_many :private_topics, through: :private_users
-  has_many :preferences
-
-  accepts_nested_attributes_for :roles, allow_destroy: true
-
-  after_save :update_posts
 
   attr_accessible :email,
     :name,
@@ -26,11 +14,8 @@ class User < ActiveRecord::Base
     :post_filter,
     :provider,
     :remember_me,
-    :roles_attributes,
     :time_zone,
     :uid
-
-  default_scope include: :roles
 
   devise :database_authenticatable,
     :recoverable,
@@ -59,85 +44,18 @@ class User < ActiveRecord::Base
       message: 'invalid email address'
     }
 
-  def self.recently_active_in(messageboard)
-    joins(:roles)
-      .where(roles: { messageboard_id: messageboard.id })
-      .where('roles.last_seen > ?', 5.minutes.ago)
-      .order('roles.last_seen')
-  end
-
   def self.from_omniauth(auth_hash)
     where(email: auth_hash['info']['email']).first ||
       create_from_omniauth(auth_hash)
-  end
-
-  def mark_active_in!(messageboard)
-    @user_role = roles.for(messageboard).first
-    if @user_role
-      @user_role.last_seen = Time.now
-      @user_role.save!
-    end
-  end
-
-  def at_notifications_for?(messageboard)
-    preference_for(messageboard).notify_on_mention
-  end
-
-  def private_message_notifications_for?(messageboard)
-    preference_for(messageboard).notify_on_message
-  end
-
-  def admins?(messageboard)
-    valid? && (superadmin? || roles.for(messageboard).as(['admin']).size > 0)
-  end
-
-  def moderates?(messageboard)
-    valid? && (superadmin? || roles.for(messageboard).as([:admin, :moderator]).size > 0)
-  end
-
-  def member_of?(messageboard)
-    valid? && (superadmin? || roles.for(messageboard).as([:admin, :moderator, :member]).size > 0)
-  end
-
-  def member_of(messageboard, as='member')
-    role = Role.new(level: as)
-    role.messageboard = messageboard
-    role.save
-    roles << role
-  end
-
-  def admin_of(messageboard)
-    member_of(messageboard, 'admin')
   end
 
   def to_param
     self.name
   end
 
-  def can_read_messageboard?(messageboard)
-    ( messageboard.restricted_to_private? && self.member_of?(messageboard) ) ||
-    ( messageboard.restricted_to_logged_in? && self.valid? ) ||
-      messageboard.public?
-  end
-
-  def post_history_by_month
-    Post.find(:all).group_by { |post| post.created_at.strftime("%B") }
-  end
-
   private
 
   def self.create_from_omniauth(auth_hash)
     create!(email: auth_hash['info']['email'], name: auth_hash['info']['nickname'])
-  end
-
-  def update_posts
-    if self.email_changed?
-      Post.update_all(["user_email = ?", self.email], ["user_email = ?", self.email_was])
-    end
-  end
-
-  def preference_for(messageboard)
-    self.preferences.where(messageboard_id: messageboard).first ||
-      NullPreference.new
   end
 end
