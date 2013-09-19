@@ -16,6 +16,11 @@
   }
 }
 
+section.topic header {
+  display: none;
+}
+
+
 #topics_posts {
   article {
     @include box-shadow(1px 1px 1px gray);
