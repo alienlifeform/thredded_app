@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130915215145) do
+ActiveRecord::Schema.define(:version => 20130920151000) do
 
   create_table "app_configs", :force => true do |t|
     t.string "permission",           :default => "public"
@@ -107,6 +107,13 @@ ActiveRecord::Schema.define(:version => 20130915215145) do
     t.datetime "updated_at",                              :null => false
   end
 
+  create_table "new_thredded_private_users", :force => true do |t|
+    t.integer  "private_topic_id"
+    t.integer  "user_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
   create_table "new_thredded_roles", :force => true do |t|
     t.string   "level"
     t.integer  "user_id"
@@ -156,16 +163,6 @@ ActiveRecord::Schema.define(:version => 20130915215145) do
   add_index "new_thredded_user_topic_reads", ["posts_count"], :name => "index_thredded_user_topic_reads_on_posts_count"
   add_index "new_thredded_user_topic_reads", ["topic_id"], :name => "index_thredded_user_topic_reads_on_topic_id"
   add_index "new_thredded_user_topic_reads", ["user_id"], :name => "index_thredded_user_topic_reads_on_user_id"
-
-  create_table "private_users", :force => true do |t|
-    t.integer  "private_topic_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "private_users", ["user_id", "private_topic_id"], :name => "index_private_users_on_user_id_and_private_topic_id"
-  add_index "private_users", ["user_id"], :name => "index_private_users_on_user_id"
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
@@ -268,9 +265,12 @@ ActiveRecord::Schema.define(:version => 20130915215145) do
   create_table "thredded_private_users", :force => true do |t|
     t.integer  "private_topic_id"
     t.integer  "user_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
+
+  add_index "thredded_private_users", ["user_id", "private_topic_id"], :name => "index_private_users_on_user_id_and_private_topic_id"
+  add_index "thredded_private_users", ["user_id"], :name => "index_private_users_on_user_id"
 
   create_table "thredded_roles", :force => true do |t|
     t.string   "level"
