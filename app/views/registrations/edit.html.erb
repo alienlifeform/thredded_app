@@ -58,12 +58,6 @@
         <%= f.time_zone_select :time_zone %>
       </li>
 
-      <li>
-        <%= f.label :post_filter %>
-        <%= f.select :post_filter, Post::Filters, {} %>
-        <em>(your most commonly used post filter)</em>
-      </li>
-
       <li class="submit"><%= f.submit 'Update Your Profile' %></li>
     </ul>
   </fieldset>
@@ -96,17 +90,6 @@
     </ul>
   </fieldset>
 <% end %>
-
-<fieldset data-section='preferences'>
-  <legend>Update Preferences For Your Messageboards</legend>
-  <% unless params['messageboard'] %>
-    <%= render 'form_selecting_messageboard' %>
-  <% else %>
-    <%= render 'form_preferences', preference: @preference %>
-  <% end %>
-</fieldset>
-
-<br />
 <br />
 <br />
 <br />

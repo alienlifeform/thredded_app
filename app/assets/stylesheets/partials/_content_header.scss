@@ -121,9 +121,15 @@
     }
   }
 
+  .topic_nav.private_topics .private_topic_list a,
+  .topic_nav.topics .topic_list a {
+    background: #999;
+    color: white;
+  }
+
   .topic_nav .listings {
 
-      list-style: none;
+    list-style: none;
     display: block;
     padding: 0px;
     margin: 0px 20px;
@@ -163,12 +169,6 @@
       letter-spacing: 1px;
       padding: 10px 15px;
       text-decoration: none;
-    }
-
-    #private_topics_listing & .private_topic_list a,
-    #topics_listing & .topic_list a {
-      background: #999;
-      color: white;
     }
   }
 
