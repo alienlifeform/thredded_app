@@ -9,6 +9,10 @@ class TopicDecorator < SimpleDelegator
     @topic = topic
   end
 
+  def read_by?(user)
+    BrowsingHistory.new(topic, user).read?
+  end
+
   def css_class
     classes = []
     classes << 'locked' if locked

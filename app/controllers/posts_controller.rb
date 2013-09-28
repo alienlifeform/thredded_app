@@ -10,24 +10,11 @@ class PostsController < ApplicationController
   def index
     authorize! :read, topic
 
-    @post = Post.new(
-      topic: topic,
-      messageboard: messageboard,
-      filter: current_user.try(:post_filter)
-    )
+    browsing_history = BrowsingHistory.new(topic, current_user, current_page)
+    @post = topic.build_post(messageboard: messageboard, filter: current_user.post_filter)
+    @posts = topic.posts.includes(user: :roles).page(current_page)
 
-    @posts = topic
-      .posts
-      .includes(user: :roles)
-      .page(page)
-
-    @read_status = UserTopicRead.find_or_create_by_user_and_topic(current_user, topic, page)
-
-    if not_inside_topic_and_in_an_old_page?
-      redirect_to_later_page
-    else
-      UserTopicRead.update_read_status!(current_user, topic, page)
-    end
+    browsing_history.update!
   end
 
   def create
@@ -52,25 +39,16 @@ class PostsController < ApplicationController
     @post ||= post
   end
 
-  def not_inside_topic_and_in_an_old_page?
-    !internal_to_topic? && page == 1 && @read_status.page > 1
-  end
-
-  def page
-    params[:page].nil? ? 1 : params[:page].to_i
-  end
-
   def extra_data
     %Q{data-latest-read=#{@read_status.post_id || 0}} if @read_status
   end
 
-  def internal_to_topic?
-    referer = request.referer || ''
-    referer.include?("#{topic.id}?page=") || (!topic.slug.nil? && referer.include?("#{topic.slug}?page="))
-  end
-
-  def redirect_to_later_page
-    redirect_to messageboard_topic_posts_path(messageboard, topic, page: @read_status.page)
+  def current_page
+    if params[:page]
+      params[:page].to_i
+    else
+      1
+    end
   end
 
   def pad_post
