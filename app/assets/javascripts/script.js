@@ -119,13 +119,13 @@ jQuery(document).ready(function() {
   }
 
   if($('[data-latest-read]').length){
-    scroll_to_post = $('body').data('latest-read');
+    scroll_to_post = $('[data-latest-read]').data('latest-read');
     $.scrollTo('#post_'+scroll_to_post, 1000, {easing:'easeInQuart'} )
 
     if(not_a_touch_device){
       scroll_to_el = $('#post_'+scroll_to_post);
 
-      jQuery('section.posts > article').removeClass('active');
+      $('section.posts > article').removeClass('active');
       $.fn.chaves.active = scroll_to_el;
       $.fn.chaves.index = scroll_to_el.index();
       scroll_to_el.addClass('active');
